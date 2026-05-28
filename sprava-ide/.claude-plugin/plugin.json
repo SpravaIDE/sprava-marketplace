@@ -1,0 +1,6 @@
+{
+  "name": "sprava-ide",
+  "version": "0.2.0",
+  "description": "HTTP API helpers (sprava-ide skill) for talking to the Sprava IDE from Claude Code terminals",
+  "author": { "name": "Sprava" }
+}

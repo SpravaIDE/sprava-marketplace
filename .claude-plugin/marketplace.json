@@ -1,0 +1,17 @@
+{
+  "name": "sprava-marketplace",
+  "owner": { "name": "Sprava" },
+  "description": "Sprava IDE Claude Code plugins",
+  "plugins": [
+    {
+      "name": "sprava-ide",
+      "source": "./sprava-ide",
+      "description": "HTTP API helpers (sprava-ide skill) for talking to the Sprava IDE from Claude Code terminals"
+    },
+    {
+      "name": "sprava",
+      "source": "./sprava",
+      "description": "Sprava IDE commands and authoring skills"
+    }
+  ]
+}
