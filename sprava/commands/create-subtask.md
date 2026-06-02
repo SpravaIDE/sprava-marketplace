@@ -19,7 +19,6 @@ sprava:
 ## Step 1: Resolve Task Context
 
 1. Use `resolving-task-context` skill to resolve the current task (issue ID and subtask ID)
-2. If `SPRAVA_TASK_ID` env var is set, run the `devai-workdirs` skill to resolve component working directories.
 
 ## Step 2: Get Subtask Description
 
@@ -159,7 +158,7 @@ Then decide whether to close out the terminal:
 
 Before stopping, mentally walk this checklist and confirm each item out loud in a one-line summary to the user. Do NOT skip this step — it is what catches missed actions (e.g., forgetting to mark an empty session completed).
 
-- [ ] **Step 1** — task context resolved (issue ID, and subtask ID if present); `devai-workdirs` run when `SPRAVA_TASK_ID` was set
+- [ ] **Step 1** — task context resolved (issue ID, and subtask ID if present)
 - [ ] **Step 2** — subtask description obtained (form field or `AskUserQuestion`)
 - [ ] **Step 3** — `to-do.md` read (or created with the seed `1` subtask if missing)
 - [ ] **Step 4** — level decided (top-level / child / sibling), prefix and number computed from existing IDs, sibling cross-reference noted if applicable

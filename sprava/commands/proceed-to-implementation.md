@@ -12,7 +12,7 @@ sprava:
 
 ## Step 0: Resolve Task Context
 
-Use the `resolving-task-context` skill to resolve the current task (issue ID and subtask ID). If `SPRAVA_TASK_ID` env var is set, also use the `devai-workdirs` skill to resolve component working directories — use the resolved paths for all file operations.
+Use the `resolving-task-context` skill to resolve the current task (issue ID and subtask ID).
 
 ## Step 1: Read Feature Documentation
 
