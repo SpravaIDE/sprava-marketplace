@@ -1,6 +1,6 @@
 {
   "name": "sprava",
-  "version": "0.5.1",
+  "version": "0.5.2",
   "description": "Sprava IDE commands (plan, subtask, approve) and authoring skills",
   "author": { "name": "Sprava" }
 }
