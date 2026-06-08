@@ -1,6 +1,6 @@
 ---
 name: sprava-ide
-description: Interact with Sprava IDE from Claude Code terminals — open files, manage tabs, and add/remove/clear context-panel buttons via the addButton()/addStickyButton()/addLaunchButton()/addStickyLaunchButton()/removeButton()/clearButtons() syntax. Use when SPRAVA_PORT env var is present.
+description: Interact with Sprava IDE from Claude Code terminals — open files, manage tabs, set the current task's status via setTaskStatus(), and add/remove/clear context-panel buttons via the addButton()/addStickyButton()/addLaunchButton()/addStickyLaunchButton()/removeButton()/clearButtons() syntax. Use when SPRAVA_PORT env var is present.
 ---
 
 # Sprava IDE Actions
@@ -82,6 +82,22 @@ Close the current terminal tab:
 ```
 
 Removes the tab from the IDE and terminates its PTY process. The target is always the current terminal (`$SPRAVA_TERMINAL_ID`). The user-facing close-confirmation dialog is bypassed when closing via the API.
+
+## Set Task Status
+
+Set the status of the current task — `setTaskStatus(<status>)`:
+
+```bash
+~/.claude/scripts/devai/set-task-status.sh in-progress
+```
+
+The target is always the current task (the issue, derived from `$SPRAVA_TASK_ID`); a `:subtask` suffix is ignored because status is task-level (e.g. `DEV-1942:1` updates `DEV-1942`).
+
+Allowed values are the project's task statuses. The built-in default set is:
+
+- `new`, `preparation`, `in-progress`, `testing`, `released`, `closed`
+
+A project whose tasks are controlled by a task-management plugin (e.g. an external tracker) defines its own status set instead. An unknown value returns a `400` with a clear error.
 
 ## Context Panel Buttons
 
