@@ -23,9 +23,22 @@ Read `features/<ISSUE-ID>/<SUBTASK-ID>-implementation-overview.md` (or `features
 
 If the overview is missing or its "Files for Review" section is incomplete or out of date, **stop**. Update it (or ask the user to update it), then re-run this command. Do NOT proceed to the commit steps without an accurate overview.
 
-## Step 3: Update to-do.md
+## Step 3: Mark the Checklist Items Complete
 
-Read `features/<ISSUE-ID>/to-do.md`. Mark the current subtask's "Wait for review" and "Commit" items complete.
+Mark the current subtask's "Wait for review" and "Commit" items complete **through the IDE** — do NOT
+edit `to-do.md` directly (a direct edit is clobbered by the next source-of-truth pull on a synced
+task).
+
+Read `features/<ISSUE-ID>/to-do.md` to find, under the current subtask (`<SUBTASK-ID>` from Step 1),
+the exact text of the two trailing items (the DevAI default is `Wait for review` / `Commit`; a
+project may override them via its `CLAUDE.md` § Subtask Template — use whatever the file actually
+shows). Then, using the `managing-checklist-via-ide` skill, run its `toggle` op once per item to
+check each one (`--issue` the issue id from Step 1, `--subtask` the current subtask id, `--checked
+true`). The IDE rewrites the cache and, on an owned task, the issue description. If `toggle` exits
+non-zero, surface the IDE's error and stop — do not fall back to editing `to-do.md`.
+
+When there is no subtask in play (an issue-level approval with no `<SUBTASK-ID>`), skip this step —
+there are no per-subtask trailing items to mark.
 
 ## Step 4: Identify Touched Components
 
