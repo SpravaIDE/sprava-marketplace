@@ -34,7 +34,22 @@ Before implementing tests, consult the project's `CLAUDE.md` § **Automated Test
 
 ## Step 3: Update Checklist
 
-If `to-do.md` exists, mark completed items after each step. Do NOT create `to-do.md` if it doesn't exist.
+If `to-do.md` exists, mark each implementation checklist item complete as you finish it — **through
+the IDE**, never by editing `to-do.md` directly (a direct edit is clobbered by the next
+source-of-truth pull on a synced task). Do NOT create `to-do.md` if it doesn't exist.
+
+For each item you complete under the current subtask (`<SUBTASK-ID>` from Step 0), use the
+`managing-checklist-via-ide` skill's `toggle` op to check it — `--issue` the issue id, `--subtask`
+the current subtask id, `--checked true` — identifying the item by its exact text as written in
+`to-do.md` and its position among that subtask's checkboxes. The IDE rewrites the cache and, on an
+owned task, the issue description.
+
+If `toggle` exits non-zero or the item can't be resolved, surface the IDE's error and **continue**
+with the implementation — do not fall back to editing `to-do.md`. Marking is bookkeeping; a failed
+toggle must not abort the implementation. (The trailing "Wait for review" / "Commit" items are marked
+later by `/sprava:approve-changes`.)
+
+When there is no subtask in play, skip this step — there are no per-subtask items to address.
 
 ## Step 4: Code Review
 
