@@ -1,6 +1,6 @@
 ---
 name: sprava-ide
-description: Interact with Sprava IDE from Claude Code terminals — open files, manage tabs, set the current task's status via setTaskStatus(), read the current task's data via getTaskData(), and add/remove/clear context-panel buttons via the addButton()/addStickyButton()/addLaunchButton()/addStickyLaunchButton()/removeButton()/clearButtons() syntax. Use when SPRAVA_PORT env var is present.
+description: Interact with Sprava IDE from Claude Code terminals — open files, manage tabs, set the current task's status via setTaskStatus(), read the current task's data via getTaskData(), find or list the project's tasks via getTaskList(), and add/remove/clear context-panel buttons via the addButton()/addStickyButton()/addLaunchButton()/addStickyLaunchButton()/removeButton()/clearButtons() syntax. Use when SPRAVA_PORT env var is present.
 ---
 
 # Sprava IDE Actions
@@ -125,6 +125,38 @@ Example — read the current task's status and remaining checklist:
 ```
 
 Errors: when `SPRAVA_PORT`, `SPRAVA_PROJECT_ID`, or `SPRAVA_TASK_ID` is unset the script prints a clear message to stderr and exits 1. An unknown task id prints the IDE's 404 body (`{"error": "Task not found"}`) and exits 1; any HTTP error ≥ 400 exits non-zero the same way.
+
+## Get Task List
+
+Find or list the project's tasks — `getTaskList(<search>?, <statuses>?, <limit>?)`:
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/get-task-list.sh" [search] [statuses] [limit]
+```
+
+All arguments are optional (pass `""` to skip an earlier positional):
+
+- `search` — case-insensitive substring match over task id and title (the same filter as the IDE task list's search box)
+- `statuses` — comma-separated status filter, e.g. `new,in-progress`
+- `limit` — maximum tasks returned, default **10** (the primary use case is finding a specific task, not dumping the full list)
+
+Prints `{ data: [...], total }` where each entry is a per-task summary (no checklists or file bodies):
+
+- `id`, `title` — task identifier and title
+- `status` — current status, or `null` when unset
+- `progress` — `{ total, completed, percentage }` across the task's checklist items
+
+`total` always reports the overall match count, so more matches than `limit` are visible — refine the search or raise the limit.
+
+Examples — find a task by name fragment; list everything in progress; full listing:
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/get-task-list.sh" "auth"
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/get-task-list.sh" "" in-progress
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/get-task-list.sh" "" "" 1000
+```
+
+Errors: when `SPRAVA_PORT` or `SPRAVA_PROJECT_ID` is unset the script prints a clear message to stderr and exits 1. An unknown project prints the IDE's 404 body (`{"error": "Project not found"}`) and exits 1; any HTTP error ≥ 400 exits non-zero the same way.
 
 ## Context Panel Buttons
 
