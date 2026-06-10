@@ -1,6 +1,6 @@
 ---
 name: sprava-ide
-description: Interact with Sprava IDE from Claude Code terminals — open files, manage tabs, set the current task's status via setTaskStatus(), read the current task's data via getTaskData(), find or list the project's tasks via getTaskList(), get the current task's recommended next subtask via getNextTask(), and add/remove/clear context-panel buttons via the addButton()/addStickyButton()/addLaunchButton()/addStickyLaunchButton()/removeButton()/clearButtons() syntax. Use when SPRAVA_PORT env var is present.
+description: Interact with Sprava IDE from Claude Code terminals — open files, manage tabs, set the current task's status via setTaskStatus(), read the current task's data via getTaskData(), find or list the project's tasks via getTaskList(), get the current task's recommended next subtask via getNextTask(), show a toast notification via notify(), and add/remove/clear context-panel buttons via the addButton()/addStickyButton()/addLaunchButton()/addStickyLaunchButton()/removeButton()/clearButtons() syntax. Use when SPRAVA_PORT env var is present.
 ---
 
 # Sprava IDE Actions
@@ -185,6 +185,23 @@ Example — pick up the next subtask, or report there is nothing to do:
 ```
 
 Errors: when `SPRAVA_PORT`, `SPRAVA_PROJECT_ID`, or `SPRAVA_TASK_ID` is unset the script prints a clear message to stderr and exits 1. An unknown task id prints the IDE's 404 body (`{"error": "Task not found"}`) and exits 1; any HTTP error ≥ 400 exits non-zero the same way.
+
+## Notify
+
+Show a toast notification in the IDE — `notify(<message>, <level>)`:
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/notify.sh" "Build finished" success
+```
+
+Use this to signal *needs attention* (build done, blocked on input) — distinct from the solid-green completed tab, which only says *done*. The toast appears in the IDE; its secondary line carries the originating terminal's task title and tab label, so the developer sees which session is talking.
+
+`level` is optional and defaults to `info`. Allowed values:
+
+- `info`, `success` — auto-dismiss after a few seconds
+- `warning`, `error` — persist until the developer dismisses them
+
+The target terminal is always the current one (`$SPRAVA_TERMINAL_ID`). An unknown level returns a `400` with a clear error.
 
 ## Context Panel Buttons
 
