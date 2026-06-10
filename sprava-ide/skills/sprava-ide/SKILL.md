@@ -1,6 +1,6 @@
 ---
 name: sprava-ide
-description: Interact with Sprava IDE from Claude Code terminals — open files, manage tabs, set the current task's status via setTaskStatus(), read the current task's data via getTaskData(), find or list the project's tasks via getTaskList(), and add/remove/clear context-panel buttons via the addButton()/addStickyButton()/addLaunchButton()/addStickyLaunchButton()/removeButton()/clearButtons() syntax. Use when SPRAVA_PORT env var is present.
+description: Interact with Sprava IDE from Claude Code terminals — open files, manage tabs, set the current task's status via setTaskStatus(), read the current task's data via getTaskData(), find or list the project's tasks via getTaskList(), get the current task's recommended next subtask via getNextTask(), and add/remove/clear context-panel buttons via the addButton()/addStickyButton()/addLaunchButton()/addStickyLaunchButton()/removeButton()/clearButtons() syntax. Use when SPRAVA_PORT env var is present.
 ---
 
 # Sprava IDE Actions
@@ -157,6 +157,34 @@ Examples — find a task by name fragment; list everything in progress; full lis
 ```
 
 Errors: when `SPRAVA_PORT` or `SPRAVA_PROJECT_ID` is unset the script prints a clear message to stderr and exits 1. An unknown project prints the IDE's 404 body (`{"error": "Project not found"}`) and exits 1; any HTTP error ≥ 400 exits non-zero the same way.
+
+## Get Next Task
+
+Get the current task's recommended next subtask — `getNextTask()`:
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/get-next-task.sh"
+```
+
+The target is always the current task (the issue, derived from `$SPRAVA_TASK_ID`; a `:subtask` suffix is stripped). The IDE recommends the first root subtask, in `to-do.md` document order, that is **not completed and not started** (zero checked boxes, including nested children) and has **no live terminal session** for that subtask. Partially-checked subtasks (work in flight) and subtasks another open terminal was launched for are skipped. Prints:
+
+```json
+{ "next": { "subtaskId": "P-2", "subtaskTitle": "Open Website URL" } }
+```
+
+When nothing qualifies — every subtask is completed, started, or has a live session — the result is an explicit empty recommendation, not an error (exit 0):
+
+```json
+{ "next": null }
+```
+
+Example — pick up the next subtask, or report there is nothing to do:
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/get-next-task.sh" | jq -r 'if .next then "next: \(.next.subtaskId) — \(.next.subtaskTitle)" else "nothing to pick up" end'
+```
+
+Errors: when `SPRAVA_PORT`, `SPRAVA_PROJECT_ID`, or `SPRAVA_TASK_ID` is unset the script prints a clear message to stderr and exits 1. An unknown task id prints the IDE's 404 body (`{"error": "Task not found"}`) and exits 1; any HTTP error ≥ 400 exits non-zero the same way.
 
 ## Context Panel Buttons
 
