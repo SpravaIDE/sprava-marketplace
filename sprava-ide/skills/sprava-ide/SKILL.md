@@ -1,6 +1,6 @@
 ---
 name: sprava-ide
-description: Interact with Sprava IDE from Claude Code terminals — open files, manage tabs, set the current task's status via setTaskStatus(), and add/remove/clear context-panel buttons via the addButton()/addStickyButton()/addLaunchButton()/addStickyLaunchButton()/removeButton()/clearButtons() syntax. Use when SPRAVA_PORT env var is present.
+description: Interact with Sprava IDE from Claude Code terminals — open files, manage tabs, set the current task's status via setTaskStatus(), read the current task's data via getTaskData(), and add/remove/clear context-panel buttons via the addButton()/addStickyButton()/addLaunchButton()/addStickyLaunchButton()/removeButton()/clearButtons() syntax. Use when SPRAVA_PORT env var is present.
 ---
 
 # Sprava IDE Actions
@@ -98,6 +98,33 @@ Allowed values are the project's task statuses. The built-in default set is:
 - `new`, `preparation`, `in-progress`, `testing`, `released`, `closed`
 
 A project whose tasks are controlled by a task-management plugin (e.g. an external tracker) defines its own status set instead. An unknown value returns a `400` with a clear error.
+
+## Get Task Data
+
+Fetch the current task's data — `getTaskData()`:
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/get-task-data.sh"
+```
+
+`${CLAUDE_PLUGIN_ROOT}` is substituted by Claude Code with this plugin's installation directory. Unlike the older actions above, this script ships with the plugin — it is not installed under `~/.claude/scripts/devai/`.
+
+The target is always the current task (the issue, derived from `$SPRAVA_TASK_ID`); a `:subtask` suffix is ignored because the data is task-level. Prints the task JSON:
+
+- `id`, `title` — task identifier and title
+- `metadata.status` — current status (plus `notes`, `tags`, optional `link`)
+- `description` — content of the task's `description.md`, or `null` when the file is absent
+- `subtasks[]` — the checklist: each subtask has `id`, `title`, `checkboxes[]` (`{ checked, text }`), nested `children[]`, and associated `files[]`
+- `progress` — `{ total, completed, percentage }` across all checklist items
+- `files[]` — task-level files (name, path, type)
+
+Example — read the current task's status and remaining checklist:
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/get-task-data.sh" | jq '{status: .metadata.status, description, todo: [.subtasks[] | {id, title, open: [.checkboxes[] | select(.checked | not) | .text]}]}'
+```
+
+Errors: when `SPRAVA_PORT`, `SPRAVA_PROJECT_ID`, or `SPRAVA_TASK_ID` is unset the script prints a clear message to stderr and exits 1. An unknown task id prints the IDE's 404 body (`{"error": "Task not found"}`) and exits 1; any HTTP error ≥ 400 exits non-zero the same way.
 
 ## Context Panel Buttons
 
