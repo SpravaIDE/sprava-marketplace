@@ -81,9 +81,7 @@ Skip this step if `git status --short` is empty.
 
 ## Step 7: Mark Terminal Completed
 
-```bash
-~/.claude/scripts/devai/set-terminal-completed.sh
-```
+Invoke the `sprava-ide` skill to mark the current terminal tab completed.
 
 If `$SPRAVA_TERMINAL_ID` is not set (running outside Sprava), skip silently — the tab indicator does not apply.
 

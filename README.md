@@ -32,4 +32,4 @@ The IDE-action commands and the `sprava-ide` skill rely on these environment var
 - `SPRAVA_TASK_ID` — current task id (optional; set when the terminal is task-scoped)
 - `SPRAVA_TERMINAL_ID` — current terminal id (used by `/approve-changes` to mark the tab completed)
 
-The IDE also installs companion shell scripts under `~/.claude/scripts/devai/` (e.g. `set-terminal-completed.sh`) — those stay in the IDE's bootstrap path and are not packaged here.
+The helper shell scripts behind the skill actions (e.g. `set-terminal-completed.sh`) ship inside the `sprava-ide` plugin at `skills/sprava-ide/scripts/` — the IDE installs nothing into `~/.claude/`.

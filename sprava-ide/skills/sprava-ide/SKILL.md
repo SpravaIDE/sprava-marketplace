@@ -7,6 +7,8 @@ description: Interact with Sprava IDE from Claude Code terminals — open files,
 
 Control the Sprava IDE from Claude Code terminals via API endpoints.
 
+All actions run scripts shipped inside this plugin, invoked as `"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/<name>.sh"` — `${CLAUDE_PLUGIN_ROOT}` is substituted by Claude Code with the plugin's installation directory.
+
 ## When to Use
 
 - When you want to show a file to the user in the IDE's file viewer
@@ -18,19 +20,19 @@ Control the Sprava IDE from Claude Code terminals via API endpoints.
 Open a file in the IDE's built-in file viewer (new tab):
 
 ```bash
-~/.claude/scripts/devai/open-file.sh /absolute/path/to/file.ts
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/open-file.sh" /absolute/path/to/file.ts
 ```
 
 Open a file alongside the current terminal (split view):
 
 ```bash
-~/.claude/scripts/devai/open-file.sh --split /absolute/path/to/file.ts
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/open-file.sh" --split /absolute/path/to/file.ts
 ```
 
 Optional: include line number to highlight a specific line:
 
 ```bash
-~/.claude/scripts/devai/open-file.sh /absolute/path/to/file.ts 42
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/open-file.sh" /absolute/path/to/file.ts 42
 ```
 
 ## Get View State
@@ -38,7 +40,7 @@ Optional: include line number to highlight a specific line:
 Query the current IDE layout state (mode, panel count, active panel):
 
 ```bash
-~/.claude/scripts/devai/get-viewstate.sh
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/get-viewstate.sh"
 ```
 
 Returns JSON with:
@@ -52,7 +54,7 @@ Returns JSON with:
 Rename the current terminal tab:
 
 ```bash
-~/.claude/scripts/devai/update-terminal-label.sh "New Label"
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/update-terminal-label.sh" "New Label"
 ```
 
 Updates the tab visible in the IDE's tab bar. The target is always the current terminal (derived from `$SPRAVA_TERMINAL_ID`).
@@ -62,13 +64,13 @@ Updates the tab visible in the IDE's tab bar. The target is always the current t
 Mark the current terminal tab as completed (work is done):
 
 ```bash
-~/.claude/scripts/devai/set-terminal-completed.sh
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/set-terminal-completed.sh"
 ```
 
 Clear the completed flag:
 
 ```bash
-~/.claude/scripts/devai/set-terminal-completed.sh false
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/set-terminal-completed.sh" false
 ```
 
 The tab turns solid green to signal completion. The target is always the current terminal (`$SPRAVA_TERMINAL_ID`).
@@ -78,7 +80,7 @@ The tab turns solid green to signal completion. The target is always the current
 Close the current terminal tab:
 
 ```bash
-~/.claude/scripts/devai/close-terminal.sh
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/close-terminal.sh"
 ```
 
 Removes the tab from the IDE and terminates its PTY process. The target is always the current terminal (`$SPRAVA_TERMINAL_ID`). The user-facing close-confirmation dialog is bypassed when closing via the API.
@@ -88,7 +90,7 @@ Removes the tab from the IDE and terminates its PTY process. The target is alway
 Set the status of the current task — `setTaskStatus(<status>)`:
 
 ```bash
-~/.claude/scripts/devai/set-task-status.sh in-progress
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/set-task-status.sh" in-progress
 ```
 
 The target is always the current task (the issue, derived from `$SPRAVA_TASK_ID`); a `:subtask` suffix is ignored because status is task-level (e.g. `DEV-1942:1` updates `DEV-1942`).
@@ -106,8 +108,6 @@ Fetch the current task's data — `getTaskData()`:
 ```bash
 "${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/get-task-data.sh"
 ```
-
-`${CLAUDE_PLUGIN_ROOT}` is substituted by Claude Code with this plugin's installation directory. Unlike the older actions above, this script ships with the plugin — it is not installed under `~/.claude/scripts/devai/`.
 
 The target is always the current task (the issue, derived from `$SPRAVA_TASK_ID`); a `:subtask` suffix is ignored because the data is task-level. Prints the task JSON:
 
@@ -138,18 +138,18 @@ When the user (or you) write any of the following, **immediately** run the match
 
 | Syntax | Action |
 |---|---|
-| `addButton("<id>", "<label>", "<command>")` | `~/.claude/scripts/devai/add-context-button.sh <id> <label> <command>` |
-| `addButton("<id>", "<label>", "<command>", "<color>")` | `~/.claude/scripts/devai/add-context-button.sh <id> <label> <command> normal <color>` |
-| `addStickyButton("<id>", "<label>", "<command>")` | `~/.claude/scripts/devai/add-context-button.sh <id> <label> <command> sticky` |
-| `addStickyButton("<id>", "<label>", "<command>", "<color>")` | `~/.claude/scripts/devai/add-context-button.sh <id> <label> <command> sticky <color>` |
-| `addLaunchButton("<id>", "<label>", "<taskId>")` | `~/.claude/scripts/devai/add-context-launch-button.sh <id> <label> <taskId> "" normal` |
-| `addLaunchButton("<id>", "<label>", "<taskId>", "<subtaskId>")` | `~/.claude/scripts/devai/add-context-launch-button.sh <id> <label> <taskId> <subtaskId> normal` |
-| `addLaunchButton("<id>", "<label>", "<taskId>", "<subtaskId>", "<color>")` | `~/.claude/scripts/devai/add-context-launch-button.sh <id> <label> <taskId> <subtaskId> normal <color>` |
-| `addStickyLaunchButton("<id>", "<label>", "<taskId>")` | `~/.claude/scripts/devai/add-context-launch-button.sh <id> <label> <taskId> "" sticky` |
-| `addStickyLaunchButton("<id>", "<label>", "<taskId>", "<subtaskId>")` | `~/.claude/scripts/devai/add-context-launch-button.sh <id> <label> <taskId> <subtaskId> sticky` |
-| `addStickyLaunchButton("<id>", "<label>", "<taskId>", "<subtaskId>", "<color>")` | `~/.claude/scripts/devai/add-context-launch-button.sh <id> <label> <taskId> <subtaskId> sticky <color>` |
-| `removeButton("<id>")` | `~/.claude/scripts/devai/remove-context-button.sh <id>` |
-| `clearButtons()` | `~/.claude/scripts/devai/clear-context-buttons.sh` |
+| `addButton("<id>", "<label>", "<command>")` | `"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/add-context-button.sh" <id> <label> <command>` |
+| `addButton("<id>", "<label>", "<command>", "<color>")` | `"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/add-context-button.sh" <id> <label> <command> normal <color>` |
+| `addStickyButton("<id>", "<label>", "<command>")` | `"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/add-context-button.sh" <id> <label> <command> sticky` |
+| `addStickyButton("<id>", "<label>", "<command>", "<color>")` | `"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/add-context-button.sh" <id> <label> <command> sticky <color>` |
+| `addLaunchButton("<id>", "<label>", "<taskId>")` | `"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/add-context-launch-button.sh" <id> <label> <taskId> "" normal` |
+| `addLaunchButton("<id>", "<label>", "<taskId>", "<subtaskId>")` | `"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/add-context-launch-button.sh" <id> <label> <taskId> <subtaskId> normal` |
+| `addLaunchButton("<id>", "<label>", "<taskId>", "<subtaskId>", "<color>")` | `"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/add-context-launch-button.sh" <id> <label> <taskId> <subtaskId> normal <color>` |
+| `addStickyLaunchButton("<id>", "<label>", "<taskId>")` | `"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/add-context-launch-button.sh" <id> <label> <taskId> "" sticky` |
+| `addStickyLaunchButton("<id>", "<label>", "<taskId>", "<subtaskId>")` | `"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/add-context-launch-button.sh" <id> <label> <taskId> <subtaskId> sticky` |
+| `addStickyLaunchButton("<id>", "<label>", "<taskId>", "<subtaskId>", "<color>")` | `"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/add-context-launch-button.sh" <id> <label> <taskId> <subtaskId> sticky <color>` |
+| `removeButton("<id>")` | `"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/remove-context-button.sh" <id>` |
+| `clearButtons()` | `"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/clear-context-buttons.sh"` |
 
 ### Rules
 
