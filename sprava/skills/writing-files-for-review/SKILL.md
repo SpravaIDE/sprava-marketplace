@@ -29,9 +29,9 @@ Group files by **vertical slice** (feature/concern), not by architectural layer.
 
 ### Group name
 Brief description of what changed and why.
-[SourceFile.ts](../../src/module/source-file.ts) - What it does
-[SourceFile.test.ts](../../src/module/source-file.test.ts) - Tests for SourceFile
-[AnotherFile.ts](../../src/module/another-file.ts) - What it does
+[SourceFile.ts](../../../src/module/source-file.ts) - What it does
+[SourceFile.test.ts](../../../src/module/source-file.test.ts) - Tests for SourceFile
+[AnotherFile.ts](../../../src/module/another-file.ts) - What it does
 ```
 
 ### Example
@@ -41,24 +41,24 @@ Brief description of what changed and why.
 
 ### Portal repository
 DB query enforcing access control. Sorted by project name.
-[PortalRepository.ts](../../src/portals/repository.ts) - Repository interface + implementation
-[PortalRepository.test.ts](../../src/portals/repository.test.ts) - Unit tests
+[PortalRepository.ts](../../../src/portals/repository.ts) - Repository interface + implementation
+[PortalRepository.test.ts](../../../src/portals/repository.test.ts) - Unit tests
 
 ### Portal service
 Orchestrates portal retrieval. Title falls back to project name.
-[PortalService.ts](../../src/portals/service.ts) - Domain service
-[PortalService.test.ts](../../src/portals/service.test.ts) - Unit tests
-[PortalDto.ts](../../src/portals/dto.ts) - Response DTO
+[PortalService.ts](../../../src/portals/service.ts) - Domain service
+[PortalService.test.ts](../../../src/portals/service.test.ts) - Unit tests
+[PortalDto.ts](../../../src/portals/dto.ts) - Response DTO
 
 ### API endpoint
 GET /portals?status=ACTIVE endpoint. Requires X-AUTH-TOKEN header.
-[PortalsController.ts](../../src/api/portals-controller.ts) - Controller
-[PortalsApi.test.ts](../../tests/integration/portals-api.test.ts) - Integration tests
+[PortalsController.ts](../../../src/api/portals-controller.ts) - Controller
+[PortalsApi.test.ts](../../../tests/integration/portals-api.test.ts) - Integration tests
 ```
 
 ## Rules
 
-- Links must use `../../` prefix (relative to `features/<issue-id>/` directory)
+- Links must use `../../../` prefix (relative to `.sprava/features/<issue-id>/` directory)
 - Use `[FileName.ext](relative-path)` markdown link format — plain text paths break the dashboard
 - Line numbers are optional: `[File.php](path#L24-L50)`
 - Before finalizing, verify ALL linked files exist

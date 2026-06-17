@@ -19,7 +19,7 @@ Use `resolving-task-context` skill to resolve the current task (issue ID and sub
 
 ## Step 2: Check Implementation Overview
 
-Read `features/<ISSUE-ID>/<SUBTASK-ID>-implementation-overview.md` (or `features/<ISSUE-ID>/implementation-overview.md` when there is no subtask).
+Read `.sprava/features/<ISSUE-ID>/<SUBTASK-ID>-implementation-overview.md` (or `.sprava/features/<ISSUE-ID>/implementation-overview.md` when there is no subtask).
 
 If the overview is missing or its "Files for Review" section is incomplete or out of date, **stop**. Update it (or ask the user to update it), then re-run this command. Do NOT proceed to the commit steps without an accurate overview.
 
@@ -29,7 +29,7 @@ Mark the current subtask's "Wait for review" and "Commit" items complete **throu
 edit `to-do.md` directly (a direct edit is clobbered by the next source-of-truth pull on a synced
 task).
 
-Read `features/<ISSUE-ID>/to-do.md` to find, under the current subtask (`<SUBTASK-ID>` from Step 1),
+Read `.sprava/features/<ISSUE-ID>/to-do.md` to find, under the current subtask (`<SUBTASK-ID>` from Step 1),
 the exact text of the two trailing items (the DevAI default is `Wait for review` / `Commit`; a
 project may override them via its `CLAUDE.md` § Subtask Template — use whatever the file actually
 shows). Then, using the `managing-checklist-via-ide` skill, run its `toggle` op once per item to
@@ -70,7 +70,7 @@ Return to the wrapper root.
 git status --short
 ```
 
-Stage explicit paths covering: the feature directory under `features/<ISSUE-ID>/`, any project-level config touched (e.g. `.claude/`, `.devai/`), and any component gitlinks updated in Step 5.
+Stage explicit paths covering: the feature directory under `.sprava/features/<ISSUE-ID>/`, any project-level config touched (e.g. `.claude/`, `.sprava/config.json`), and any component gitlinks updated in Step 5.
 
 ```bash
 git commit -m "<ISSUE-ID>:<SUBTASK-ID>: <one-line summary>"

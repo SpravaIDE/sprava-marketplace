@@ -19,16 +19,16 @@ Determines the current task's issue ID and subtask ID and documents the feature 
 2. If `SPRAVA_TASK_ID` is set, use it as the task identifier.
 3. Otherwise, read the current session name to get the task identifier.
 4. Extract the issue ID (e.g., `DEVAI-MCP`, `REQ-068`, `FIX-44`) and optional subtask ID (e.g., `P-1`, `P-9.1`) from the identifier. The format is `<ISSUE-ID>:<SUBTASK-ID>` when a subtask is present.
-5. Feature directory: `features/<ISSUE-ID>/`.
+5. Feature directory: `.sprava/features/<ISSUE-ID>/`.
 
 ## Feature Directory Conventions
 
-Feature directories live at the host project's root in `features/`. The directory name matches the issue ID (e.g. `FEAT-001`, `REQ-068`, `RELEASE-TASKS-2`).
+Feature directories live under the host project's config directory in `.sprava/features/`. The directory name matches the issue ID (e.g. `FEAT-001`, `REQ-068`, `RELEASE-TASKS-2`).
 
 ### Layout
 
 ```
-features/
+.sprava/features/
 └── <ISSUE-ID>/
     ├── implementation-plan.md                        # Issue-level technical approach
     ├── <subtask-id>-implementation-plan.md           # Per-subtask plan (e.g. P-1-implementation-plan.md)

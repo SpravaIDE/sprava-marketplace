@@ -110,7 +110,7 @@ A diagram that doesn't render is worse than none — **always validate before pr
 
 ```bash
 # Run from a directory whose node_modules has `mermaid` + `jsdom` (in this repo: ide/)
-cd ide && node "$SKILL_DIR/scripts/verify-mermaid.mjs" ../features/<ISSUE>/<plan>.md
+cd ide && node "$SKILL_DIR/scripts/verify-mermaid.mjs" ../.sprava/features/<ISSUE>/<plan>.md
 ```
 
 `$SKILL_DIR` is this skill's base directory (printed when the skill loads). Read the output:

@@ -28,7 +28,7 @@ Read the `description` form field from `$ARGUMENTS` for the subtask description.
 
 This command does **not** read or edit `to-do.md` for numbering or insertion — Steps 4–5 delegate persistence to the IDE.
 
-Check whether `to-do.md` exists in the feature directory (`features/<ISSUE_ID>/to-do.md`). If it exists, continue to Step 4.
+Check whether `to-do.md` exists in the feature directory (`.sprava/features/<ISSUE_ID>/to-do.md`). If it exists, continue to Step 4.
 
 If it does **not** exist, seed an "already-completed work" subtask *through the IDE* before adding the new one — never write `to-do.md` directly:
 

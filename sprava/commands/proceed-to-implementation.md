@@ -94,10 +94,10 @@ Run the lint, unit-test, and integration-test commands the project documents in 
 
 ### Include DevAI Metadata Files
 Before committing, check for modified or untracked DevAI metadata files and include them in the commit. These files are often changed as a side effect of working on a feature and must not be left behind:
-- `.devai/config.json`
-- `features/**/.devai.json`
-- `features/**/.dashboard-review-status.json`
-- `features/**/implementation-plan.md` and `features/**/*-implementation-plan.md`
+- `.sprava/config.json`
+- `.sprava/features/**/.sprava.json`
+- `.sprava/features/**/.dashboard-review-status.json`
+- `.sprava/features/**/implementation-plan.md` and `.sprava/features/**/*-implementation-plan.md`
 
 Run `git status` and stage any of the above that have changes, alongside the feature files.
 

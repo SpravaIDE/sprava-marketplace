@@ -23,8 +23,8 @@ Creates implementation overview documents summarizing completed work.
 ### 2. Create Overview Document
 
 **File naming:**
-- If `to-do.md` exists and subtask ID is known: `features/<ISSUE-ID>/<taskId>-implementation-overview.md`
-- Otherwise: `features/<ISSUE-ID>/implementation-overview.md`
+- If `to-do.md` exists and subtask ID is known: `.sprava/features/<ISSUE-ID>/<taskId>-implementation-overview.md`
+- Otherwise: `.sprava/features/<ISSUE-ID>/implementation-overview.md`
 
 **Structure:**
 
@@ -52,4 +52,4 @@ One paragraph: what was built and why. Be concise — no code snippets.
 - Key Decisions: only include non-obvious choices worth explaining
 - Skip Key Decisions section entirely if all choices were straightforward
 - For simple changes (single file, no decisions), Summary + Files for Review is enough
-- **Always use `writing-files-for-review` skill** for the Files for Review section — never write it manually. The skill enforces correct relative paths (`../../` prefix from feature directory) and proper markdown link format.
+- **Always use `writing-files-for-review` skill** for the Files for Review section — never write it manually. The skill enforces correct relative paths (`../../../` prefix from feature directory) and proper markdown link format.
