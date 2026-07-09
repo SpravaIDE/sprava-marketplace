@@ -1,6 +1,6 @@
 ---
 name: sprava-ide
-description: Interact with Sprava IDE from Claude Code terminals — open files, manage tabs, set the current task's status via setTaskStatus(), read the current task's data via getTaskData(), find or list the project's tasks via getTaskList(), get the current task's recommended next subtask via getNextTask(), show a toast notification via notify(), and add/remove/clear context-panel buttons via the addButton()/addStickyButton()/addLaunchButton()/addStickyLaunchButton()/removeButton()/clearButtons() syntax. Use when SPRAVA_PORT env var is present.
+description: Interact with Sprava IDE from Claude Code terminals — open files, manage tabs, set the current task's status via setTaskStatus(), read the current task's data via getTaskData(), find or list the project's tasks via getTaskList(), get the current task's recommended next subtask via getNextTask(), launch another task's terminal via launchTask(), show a toast notification via notify(), and add/remove/clear context-panel buttons via the addButton()/addStickyButton()/addLaunchButton()/addStickyLaunchButton()/removeButton()/clearButtons() syntax. Use when SPRAVA_PORT env var is present.
 ---
 
 # Sprava IDE Actions
@@ -166,10 +166,20 @@ Get the current task's recommended next subtask — `getNextTask()`:
 "${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/get-next-task.sh"
 ```
 
-The target is always the current task (the issue, derived from `$SPRAVA_TASK_ID`; a `:subtask` suffix is stripped). The IDE recommends the first root subtask, in `to-do.md` document order, that is **not completed and not started** (zero checked boxes, including nested children) and has **no live terminal session** for that subtask. Partially-checked subtasks (work in flight) and subtasks another open terminal was launched for are skipped. Prints:
+The target is always the current task (the issue, derived from `$SPRAVA_TASK_ID`; a `:subtask` suffix is stripped). The IDE recommends the first root subtask, in `to-do.md` document order, that is **not completed and not started** (zero checked boxes, including nested children) and has **no live terminal session** for that subtask. Partially-checked subtasks (work in flight) and subtasks another open terminal was launched for are skipped. Prints the recommended subtask **in full** — the same `Subtask` shape as `getTaskData`'s `subtasks[]`: `id`, `title`, `level`, `checkboxes[]`, nested `children[]`, associated `files[]`, and `effectiveAssignee` (`{ id, source }`, present only when the subtask has a resolved assignee):
 
 ```json
-{ "next": { "subtaskId": "P-2", "subtaskTitle": "Open Website URL" } }
+{
+  "next": {
+    "id": "P-2",
+    "title": "Open Website URL",
+    "level": 1,
+    "checkboxes": [{ "checked": false, "text": "Navigate to the URL" }],
+    "children": [],
+    "files": [],
+    "effectiveAssignee": { "id": "d.karviga", "source": "explicit" }
+  }
+}
 ```
 
 When nothing qualifies — every subtask is completed, started, or has a live session — the result is an explicit empty recommendation, not an error (exit 0):
@@ -181,7 +191,7 @@ When nothing qualifies — every subtask is completed, started, or has a live se
 Example — pick up the next subtask, or report there is nothing to do:
 
 ```bash
-"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/get-next-task.sh" | jq -r 'if .next then "next: \(.next.subtaskId) — \(.next.subtaskTitle)" else "nothing to pick up" end'
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/get-next-task.sh" | jq -r 'if .next then "next: \(.next.id) — \(.next.title)" else "nothing to pick up" end'
 ```
 
 Errors: when `SPRAVA_PORT`, `SPRAVA_PROJECT_ID`, or `SPRAVA_TASK_ID` is unset the script prints a clear message to stderr and exits 1. An unknown task id prints the IDE's 404 body (`{"error": "Task not found"}`) and exits 1; any HTTP error ≥ 400 exits non-zero the same way.
@@ -202,6 +212,33 @@ Use this to signal *needs attention* (build done, blocked on input) — distinct
 - `warning`, `error` — persist until the developer dismisses them
 
 The target terminal is always the current one (`$SPRAVA_TERMINAL_ID`). An unknown level returns a `400` with a clear error.
+
+## Launch Task
+
+Open a terminal for another task — `launchTask(<taskId>, <subtaskId>?, <input>?)`:
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/launch-task.sh" TASK-2 P-1
+```
+
+Launches a terminal for `<taskId>` (and optional `<subtaskId>`) using the project's **default** run configuration for that scope — the same one the tasks-list play button fires. Pass a free-form `<input>` to run that command/prompt instead of the default config's command (the spawn type — claude vs shell — still follows the default config; with no config at all, `<input>` runs in a new claude terminal). Pass `""` for the subtask slot to skip it. Use this to chain work — e.g. when one subtask finishes, start the next without the developer clicking a button.
+
+When the calling terminal is completed/idle the launch **reuses its pane**; otherwise it opens a new tab — mirroring the launch button. Pane reuse targets the calling terminal via `$SPRAVA_TERMINAL_ID` (present in IDE claude terminals).
+
+Prints the launched terminal's id and tab label:
+
+```json
+{ "terminalId": "0f9c8e2a-…", "tabLabel": "TASK-2:P-1" }
+```
+
+Examples — start a subtask with the default config; start a task with a free-form prompt:
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/launch-task.sh" DEV-1942 7
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/launch-task.sh" DEV-1942 7 "/sprava:proceed-to-implementation DEV-1942:7"
+```
+
+Errors: when `SPRAVA_PORT` or `SPRAVA_PROJECT_ID` is unset, or `<taskId>` is missing, the script prints a clear message to stderr and exits 1. An unknown task id prints the IDE's 404 body (`{"error": "Task not found"}`) and exits 1; any HTTP error ≥ 400 exits non-zero the same way. The launch is best-effort — it needs a connected IDE that owns the calling terminal; when none is connected, no terminal opens.
 
 ## Context Panel Buttons
 
