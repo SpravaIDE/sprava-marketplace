@@ -1,6 +1,6 @@
 # Sprava Marketplace
 
-Claude Code marketplace shipping two plugins for working inside the [Sprava IDE](https://gitlab.com/d.karviga/claude-ide):
+Claude Code marketplace shipping two plugins for working inside the [Sprava IDE](https://github.com/SpravaIDE/sprava-ide):
 
 - **`sprava-ide`** — the `sprava-ide` skill (HTTP API helpers for talking to the IDE from inside a terminal: open files, manage tabs, context-panel buttons). Required for the IDE to work end-to-end.
 - **`sprava`** — slash commands (`/sprava:create-implementation-plan`, `/sprava:create-subtask`, `/sprava:approve-changes`, `/sprava:proceed-to-implementation`, `/sprava:question`) and authoring skills (`writing-implementation-overview`, `writing-files-for-review`, `resolving-task-context`, `creating-sequence-diagram`).
@@ -10,7 +10,7 @@ The IDE detects whether each plugin is installed on start and shows install inst
 ## Install
 
 ```
-/plugin marketplace add git@gitlab.com:d.karviga/sprava-marketplace.git
+/plugin marketplace add git@github.com:SpravaIDE/sprava-marketplace.git
 /plugin install sprava-ide@sprava-marketplace
 /plugin install sprava@sprava-marketplace
 ```
