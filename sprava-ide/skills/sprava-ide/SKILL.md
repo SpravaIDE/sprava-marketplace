@@ -1,6 +1,6 @@
 ---
 name: sprava-ide
-description: Interact with Sprava IDE from Claude Code terminals — open files, manage tabs, set the current task's status via setTaskStatus(), read the current task's data via getTaskData(), find or list the project's tasks via getTaskList(), get the current task's recommended next subtask via getNextTask(), launch another task's terminal via launchTask(), show a toast notification via notify(), and add/remove/clear context-panel buttons via the addButton()/addStickyButton()/addLaunchButton()/addStickyLaunchButton()/removeButton()/clearButtons() syntax. Use when SPRAVA_PORT env var is present.
+description: Interact with Sprava IDE from Claude Code terminals — open files, manage tabs, set the current task's status via setTaskStatus(), read the current task's data via getTaskData(), find or list the project's tasks via getTaskList(), get the current task's recommended next subtask via getNextTask(), launch another task's terminal via launchTask(), show a toast notification via notify(), keep a file in a task-less session's file panel via addSessionFile(), and add/remove/clear context-panel buttons via the addButton()/addStickyButton()/addLaunchButton()/addStickyLaunchButton()/removeButton()/clearButtons() syntax. Use when SPRAVA_PORT env var is present.
 ---
 
 # Sprava IDE Actions
@@ -34,6 +34,24 @@ Optional: include line number to highlight a specific line:
 ```bash
 "${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/open-file.sh" /absolute/path/to/file.ts 42
 ```
+
+## Session Files
+
+A terminal opened without a task (`$SPRAVA_TASK_ID` unset) has its own file panel and a git-ignored drafts directory in the project, `$SPRAVA_SESSION_DIR`. The panel is still there after a page reload, an IDE restart, or a resume of this conversation.
+
+- **Write drafts into `$SPRAVA_SESSION_DIR`**, not your scratchpad, when they are meant for the developer: plans, reports, notes to review. The IDE can't read files outside the project and the home directory, so a draft in `/tmp` can't be shown.
+- **Add a file to the panel** — `addSessionFile(<path>)` — only when the developer should be able to find it again. Opening, reading or writing a file never adds it.
+
+```bash
+"${CLAUDE_PLUGIN_ROOT}/skills/sprava-ide/scripts/add-session-file.sh" "$SPRAVA_SESSION_DIR/plan.md"
+```
+
+The path must be absolute and the file must exist. Adding it twice is harmless. To also show it now, open it with `open-file.sh`.
+
+Errors: the script prints the IDE's error body and exits 1 on HTTP ≥ 400, which happens in two cases:
+
+- **404:** a task terminal. Task files live in the task's feature directory instead.
+- **400:** a relative, missing or unreadable path.
 
 ## Get View State
 
